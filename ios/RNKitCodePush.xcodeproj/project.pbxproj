@@ -77,7 +77,6 @@
 		9F394D6C1C7C25DC00C794C0 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
 		9F394D6D1C7C25DC00C794C0 /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
 		9F394D6E1C7C25DC00C794C0 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
-		9F394D6F1C7C25DC00C794C0 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F394D711C7C25DC00C794C0 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		9F394D721C7C25DC00C794C0 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		9F394D731C7C25DC00C794C0 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
@@ -160,7 +159,6 @@
 			children = (
 				9F394D581C7C25DC00C794C0 /* aes */,
 				9F394D6E1C7C25DC00C794C0 /* Common.h */,
-				9F394D6F1C7C25DC00C794C0 /* Info.plist */,
 				9F394D701C7C25DC00C794C0 /* minizip */,
 				9F394D7A1C7C25DC00C794C0 /* SSZipArchive.h */,
 				9F394D7B1C7C25DC00C794C0 /* SSZipArchive.m */,

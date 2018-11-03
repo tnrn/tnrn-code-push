@@ -64,9 +64,6 @@ typedef NS_ENUM(NSInteger, HotUpdateType) {
     RNKitCodePushManager *_fileManager;
 }
 
-@synthesize bridge = _bridge;
-@synthesize methodQueue = _methodQueue;
-
 RCT_EXPORT_MODULE(RNKitCodePush);
 
 + (NSURL *)bundleURL
@@ -167,7 +164,7 @@ RCT_EXPORT_MODULE(RNKitCodePush);
     [defaults synchronize];
     
     ret[@"deviceInfo"] = [[RNKitCodePushDeviceInfo alloc] getDeviceInfoStr];
-
+    
     return ret;
 }
 
@@ -178,6 +175,10 @@ RCT_EXPORT_MODULE(RNKitCodePush);
         _fileManager = [RNKitCodePushManager new];
     }
     return self;
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[EVENT_PROGRESS_DOWNLOAD, EVENT_PROGRESS_UNZIP];
 }
 
 RCT_EXPORT_METHOD(downloadUpdate:(NSDictionary *)options
@@ -297,15 +298,15 @@ RCT_EXPORT_METHOD(markSuccess)
     
     NSString *zipFilePath = [dir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@%@",hashName, [self zipExtension:type]]];
     NSString *unzipDir = [dir stringByAppendingPathComponent:hashName];
-
+    
     RCTLogInfo(@"RNUpdate -- download file %@", updateUrl);
     [RNKitCodePushDownloader download:updateUrl savePath:zipFilePath progressHandler:^(long long receivedBytes, long long totalBytes) {
-        [self.bridge.eventDispatcher sendAppEventWithName:EVENT_PROGRESS_DOWNLOAD
-                                                     body:@{
-                                                            PARAM_PROGRESS_HASHNAME:hashName,
-                                                            PARAM_PROGRESS_RECEIVED:[NSNumber numberWithLongLong:receivedBytes],
-                                                            PARAM_PROGRESS_TOTAL:[NSNumber numberWithLongLong:totalBytes]
-                                                            }];
+        [self sendEventWithName:EVENT_PROGRESS_DOWNLOAD
+                           body:@{
+                                  PARAM_PROGRESS_HASHNAME:hashName,
+                                  PARAM_PROGRESS_RECEIVED:[NSNumber numberWithLongLong:receivedBytes],
+                                  PARAM_PROGRESS_TOTAL:[NSNumber numberWithLongLong:totalBytes]
+                                  }];
     } completionHandler:^(NSString *path, NSError *error) {
         if (error) {
             callback(error);
@@ -314,12 +315,12 @@ RCT_EXPORT_METHOD(markSuccess)
             RCTLogInfo(@"RNUpdate -- unzip file %@", zipFilePath);
             NSString *unzipFilePath = [dir stringByAppendingPathComponent:hashName];
             [_fileManager unzipFileAtPath:zipFilePath toDestination:unzipFilePath progressHandler:^(NSString *entry,long entryNumber, long total) {
-                [self.bridge.eventDispatcher sendAppEventWithName:EVENT_PROGRESS_UNZIP
-                                                             body:@{
-                                                                    PARAM_PROGRESS_HASHNAME:hashName,
-                                                                    PARAM_PROGRESS_RECEIVED:[NSNumber numberWithLong:entryNumber],
-                                                                    PARAM_PROGRESS_TOTAL:[NSNumber numberWithLong:total]
-                                                                    }];
+                [self sendEventWithName:EVENT_PROGRESS_UNZIP
+                                   body:@{
+                                          PARAM_PROGRESS_HASHNAME:hashName,
+                                          PARAM_PROGRESS_RECEIVED:[NSNumber numberWithLong:entryNumber],
+                                          PARAM_PROGRESS_TOTAL:[NSNumber numberWithLong:total]
+                                          }];
                 
             } completionHandler:^(NSString *path, BOOL succeeded, NSError *error) {
                 dispatch_async(_methodQueue, ^{
@@ -374,7 +375,7 @@ RCT_EXPORT_METHOD(markSuccess)
             
             NSDictionary *copies = json[@"copies"];
             NSDictionary *deletes = json[@"deletes"];
-
+            
             [_fileManager copyFiles:copies fromDir:sourceOrigin toDir:unzipDir deletes:deletes completionHandler:^(NSError *error) {
                 if (error) {
                     callback(error);
@@ -448,7 +449,7 @@ RCT_EXPORT_METHOD(markSuccess)
 + (NSString *)packageVersion
 {
     static NSString *version = nil;
-
+    
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
